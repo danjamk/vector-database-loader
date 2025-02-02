@@ -1,4 +1,5 @@
 import unittest
+import os
 from vector_database_loader.document_processing_utils import (
     get_sitemap_urls,
     website_crawler,
@@ -52,6 +53,12 @@ class MyTestCase(unittest.TestCase):
                               }
                           ]
                           }
+
+        # If folder pdf_downloads does not exist, create it
+        if not os.path.exists(content_source["location"]):
+            os.makedirs(content_source["location"])
+
+
         docs = get_website_pdfs(content_source)
         print(f"Found {len(docs)} documents")
         self.assertTrue(len(docs) > 0)
@@ -72,7 +79,6 @@ class MyTestCase(unittest.TestCase):
         print(f"Reduced from {full_url_count} to {len(new_url_list)} with wildcard URL filter")
         self.assertTrue(len(new_url_list) < full_url_count)
 
-
     def test_url_whitelist(self):
         sitemap_url = "https://superlinked.com/vectorhub/sitemap.xml"
         urls = get_sitemap_urls(sitemap_url)
@@ -83,7 +89,6 @@ class MyTestCase(unittest.TestCase):
         new_url_list = url_whitelist(urls, [single_whitelist_url])
         print(f"Reduced from {full_url_count} to {len(new_url_list)} with single URL filter")
         self.assertTrue(len(new_url_list) < full_url_count)
-
 
     def test_get_website_documents(self):
         content_source = {"name": "Test Website",
@@ -98,8 +103,6 @@ class MyTestCase(unittest.TestCase):
         docs = get_website_documents(content_source)
         print(f"Found {len(docs)} documents")
         self.assertTrue(len(docs) > 0)
-
-
 
 if __name__ == '__main__':
     unittest.main()
