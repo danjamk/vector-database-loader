@@ -1,4 +1,5 @@
 import unittest
+import os
 from vector_database_loader.document_processing_utils import (
     get_sitemap_urls,
     website_crawler,
@@ -52,6 +53,12 @@ class MyTestCase(unittest.TestCase):
                               }
                           ]
                           }
+
+        # If folder pdf_downloads does not exist, create it
+        if not os.path.exists(content_source["location"]):
+            os.makedirs(content_source["location"])
+
+
         docs = get_website_pdfs(content_source)
         print(f"Found {len(docs)} documents")
         self.assertTrue(len(docs) > 0)
