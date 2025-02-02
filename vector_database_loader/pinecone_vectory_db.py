@@ -5,7 +5,7 @@ from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone, ServerlessSpec
 from vector_database_loader.base_vector_db import (
     BaseVectorLoader,
-    get_embedding,
+    # get_embedding,
     BaseVectorQuery
 )
 from pinecone.exceptions import NotFoundException
@@ -36,9 +36,8 @@ class PineconeVectorLoader(BaseVectorLoader):
         :param delete_index: Boolean flag indicating whether to delete the index before loading.
         :return: The Pinecone vector database instance.
         """
-        embeddings = get_embedding(self.embedding_model)
         print(f"   Loading {len(document_set)} document chunks into VDB index {self.index_name}")
-        vdb = PineconeVectorStore.from_documents(document_set, embeddings, index_name=self.index_name)
+        vdb = PineconeVectorStore.from_documents(document_set, self.embedding_client, index_name=self.index_name)
         return vdb
 
     def index_exists(self, index_name=None):
@@ -54,22 +53,21 @@ class PineconeVectorLoader(BaseVectorLoader):
         index_info = self.describe_index(index_name)
         return bool(index_info)
 
-    def create_index(self, index_name=None, embedding_model=None):
+    def create_index(self, index_name=None, embedding_client=None):
         """
         Creates a Pinecone index with the appropriate dimension size based on the embedding model.
 
         :param index_name: The name of the index to create.
-        :param embedding_model: The embedding model used to determine the index's dimension size.
+        :param embedding_client: The LangChain embedding client to be used. Used to determine the index's dimension size.
         :return: Boolean indicating whether the index was successfully created.
         """
-        if embedding_model is None:
-            embedding_model = self.embedding_model
+        if embedding_client is None:
+            embedding_client = self.embedding_client
 
         if index_name is None:
             index_name = self.index_name
 
-        embeddings = get_embedding(embedding_model)
-        embedding_vector = embeddings.embed_query(
+        embedding_vector = embedding_client.embed_query(
             "Some string to determine embedding dimensional size to create the index")
         dimension_size = len(embedding_vector)
 
@@ -146,8 +144,7 @@ class PineconeVectorQuery(BaseVectorQuery):
 
         :return: PineconeVectorStore client instance.
         """
-        embedding = get_embedding(self.embedding_model)
-        vdb = PineconeVectorStore(index_name=self.index_name, embedding=embedding)
+        vdb = PineconeVectorStore(index_name=self.index_name, embedding=self.embedding_client)
         return vdb
 
     def status_check(self):

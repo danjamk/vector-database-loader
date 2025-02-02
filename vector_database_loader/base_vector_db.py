@@ -10,65 +10,20 @@ from vector_database_loader.document_processing_utils import (
 )
 
 
-class EmbeddingModels:
-    """
-    A class containing predefined embedding model configurations.
-    """
-    OPENAI_GPT_DEFAULT = {"name": "openai-gpt-default", "provider": "openai", "model": "default"}
-    OPENAI_GPT_V3LARGE = {"name": "openai-gpt-v3-large", "provider": "openai", "model": "text-embedding-3-large"}
-    HUGFACE_DEFAULT = {"name": "hugging-face-default", "provider": "hugging-face", "model": "default"}
-    HUGFACE_BGE_LARGE = {"name": "hugging-face-bge-large", "provider": "hugging-face", "model": "BAAI/bge-large-en"}
-    HUGFACE_MPNET_BASE = {"name": "hugging-face-mpnet-base", "provider": "hugging-face",
-                          "model": "sentence-transformers/all-mpnet-base-v2"}
-    HUGFACE_MINILM = {"name": "hugging-face-minilm", "provider": "hugging-face",
-                      "model": "sentence-transformers/all-MiniLM-L6-v2"}
-    # Additional models can be added here
-
-
-def get_embedding(model=None):
-    """
-    Returns an embedding model instance based on the provided configuration.
-
-    :param model: A dictionary containing model details (name, provider, model identifier). Defaults to OpenAI GPT-3 Large.
-    :return: An embedding model instance.
-    """
-    embeddings = None
-    if model is None:
-        model = EmbeddingModels.OPENAI_GPT_V3LARGE
-
-    if model['provider'] == 'openai':
-        load_dotenv(find_dotenv())
-        if model['name'] == EmbeddingModels.OPENAI_GPT_DEFAULT['name']:
-            embeddings = OpenAIEmbeddings()
-        else:
-            embeddings = OpenAIEmbeddings(model=model['model'])
-
-    elif model['provider'] == 'hugging-face':
-        if model['name'] == EmbeddingModels.HUGFACE_DEFAULT['name']:
-            embeddings = HuggingFaceEmbeddings()
-        else:
-            embeddings = HuggingFaceEmbeddings(model_name=model['model'])
-
-    else:
-        raise ValueError(f"Error getting embedding. There is no provider with name: {model['provider']}")
-
-    return embeddings
-
-
 class BaseVectorLoader:
     """
     Base class for loading documents into a vector database.
     """
 
-    def __init__(self, index_name, embedding_model):
+    def __init__(self, index_name, embedding_client):
         """
         Initializes the BaseVectorLoader.
 
         :param index_name: The name of the index.
-        :param embedding_model: The embedding model to be used.
+        :param embedding_client: The LangChain embedding client to be used.
         """
         self.index_name = index_name
-        self.embedding_model = embedding_model
+        self.embedding_client = embedding_client
         load_dotenv(find_dotenv())
 
     def load_sources(self, content, delete_index=False):
@@ -140,7 +95,7 @@ class BaseVectorLoader:
     def index_exists(self, index_name=None):
         raise NotImplementedError
 
-    def create_index(self, index_name=None, embedding_model=None):
+    def create_index(self, index_name=None, embedding_client=None):
         raise NotImplementedError
 
     def delete_index(self, index_name=None):
@@ -152,15 +107,15 @@ class BaseVectorQuery:
     Base class for querying a vector database.
     """
 
-    def __init__(self, index_name, embedding_model):
+    def __init__(self, index_name, embedding_client):
         """
         Initializes the BaseVectorQuery class.
 
         :param index_name: The name of the index.
-        :param embedding_model: The embedding model to be used.
+        :param embedding_client: The LangChain embedding client to be used.
         """
         self.index_name = index_name
-        self.embedding_model = embedding_model
+        self.embedding_client = embedding_client
         load_dotenv(find_dotenv())
         self.vdb_client = self.get_client()
 

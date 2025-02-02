@@ -1,10 +1,12 @@
 import unittest
 import time
 
-from vector_database_loader.pinecone_vectory_db import PineconeVectorQuery
-from vector_database_loader.base_vector_db import EmbeddingModels
+from dotenv import load_dotenv, find_dotenv
+from langchain_openai import OpenAIEmbeddings
 
-# TODO: Need to implement something to ensure the index is loaded and ready
+from vector_database_loader.pinecone_vectory_db import PineconeVectorQuery
+
+load_dotenv(find_dotenv())
 
 class TestVDBQuery(unittest.TestCase):
     def setUp(self):
@@ -13,10 +15,10 @@ class TestVDBQuery(unittest.TestCase):
         time.sleep(30)
 
     def test_query_webpage_index(self):
-        embedding_model = EmbeddingModels.OPENAI_GPT_V3LARGE
+        embedding_client = OpenAIEmbeddings()
         index_name = "test-webpage-index-loader"
         vector_db = PineconeVectorQuery(index_name=index_name,
-                                        embedding_model=embedding_model)
+                                        embedding_client=embedding_client)
         query = "What is SpaceX's most recent rocket model being tested?"
         documents = vector_db.query(query)
         self.assertTrue(documents is not None)
