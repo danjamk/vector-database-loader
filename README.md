@@ -45,6 +45,22 @@ for doc in documents:
     print(f"   {doc.page_content}")
 ```
 
+## Setup
+Ensure you have Python 3.12 or later installed. Pyenv always great for this.
+This project also using Poetry, so you will need to have that installed as well.  
+
+1. Clone the repo
+2. cd to the project directory `cd vector-database-loader`
+3. Create a virtual environment `python -m venv .venv`
+4. Activate the virtual environment:
+    - On Windows: `.venv\Scripts\activate`
+    - On macOS/Linux: `source .venv/bin/activate`
+5. Run `poetry install` to install the dependencies
+6. Create a .env file in the root directory.  See .evn.example for the required variables
+7. Run the example: `python example.py`
+
+
+
 ## Roadmap
 - Add support for more vector databases.  Shortlist is: [Milvus](https://milvus.io/) and [Weaviate](https://weaviate.io/)
 - Add support for more embedding model providers. Shortlist: [AWS Bedrock](https://aws.amazon.com/bedrock/), [Cohere](https://cohere.com/embed), [HuggingFace](https://huggingface.co/models?other=embeddings) remote models
