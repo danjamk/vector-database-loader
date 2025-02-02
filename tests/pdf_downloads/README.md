@@ -1,0 +1,1 @@
+This folder is a working folder for PDF downloads for processing.
