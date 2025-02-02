@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "vector-database-loader"
+version = "0.1.0"
+description = ""
+authors = ["danjamk <dan@risegardens.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+python-dotenv = "^1.0.1"
+langchain-openai = "^0.3.2"
+langchain-community = "^0.3.16"
+colorama = "^0.4.6"
+nltk = "^3.9.1"
+langchain-pinecone = "^0.2.2"
+selenium = "^4.28.1"
+unstructured = "^0.16.17"
+docx2txt = "^0.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
