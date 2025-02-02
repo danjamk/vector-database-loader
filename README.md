@@ -11,8 +11,8 @@ More vector databases will be added, but if needed you can fork the project and 
 - **Embedding Support** - The framework is built to support multiple embedding models but is currently implementing support for [OpenAI](https://platform.openai.com/docs/guides/embeddings) and [HuggingFace](https://huggingface.co/models?other=embeddings) local embeddings.
 Again, forking the database and extending the base class will allow you to add your own embedding models.
 - **Content Curation** - The framework is built configure some common content types and sources, but again is meant to be extended a needed.
- - Sources include websites and local folders
- - Types include PDF, Word, and Web content
+  - Sources include websites and local folders
+  - Types include PDF, Word, and Web content
 
 ## Example
 ```python
@@ -52,15 +52,3 @@ for doc in documents:
 - Add support for more sources.  Shortlist: Google Drive, AWS S3 folder.  
 
 
-## TODO
-MVP:
-- Do a clean test of project
-- Make public
-- Link to my chatbot architecture article
-
-Post MVP
-- create test cases for each type and load to vector
-- publish to pypi and test - make sure it works
-- Update readme to reflect new changes
-- Create project download regression tester
-- Create a pypi download regression tester
