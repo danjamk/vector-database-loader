@@ -17,6 +17,12 @@ langchain-pinecone = "^0.2.2"
 selenium = "^4.28.1"
 unstructured = "^0.16.17"
 docx2txt = "^0.8"
+langchain = "^0.3.17"
+google-api-python-client = "^2.160.0"
+google-auth-httplib2 = "^0.2.0"
+google-auth-oauthlib = "^1.2.1"
+pymilvus = "^2.5.4"
+langchain-milvus = "^0.1.8"
 
 
 [build-system]
