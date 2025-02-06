@@ -2,6 +2,7 @@ import re
 import os
 import sys
 import time
+import fnmatch
 
 from colorama import Fore, Style
 import requests
@@ -11,8 +12,12 @@ from langchain_community.document_loaders import (
     SeleniumURLLoader,
     PyPDFLoader
 )
+
+from langchain.docstore.document import Document
 import xml.etree.ElementTree as ET
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
 
 DEFAULT_CHUNK_SIZE = 512
 
@@ -152,6 +157,42 @@ def url_whitelist(urls, whitelist):
             continue
 
     return filtered_urls
+
+def is_item_blacklisted(item_string, blacklist):
+    """
+    Checks if an item string is blacklisted, considering both exact matches and wildcards.
+
+    Args:
+        item_string: The string to check against the blacklist.
+        blacklist: A list of strings representing the blacklist, including wildcards.
+
+    Returns:
+        True if the item string is blacklisted, False otherwise.
+    """
+    for blacklisted_item in blacklist:
+        if blacklisted_item == item_string:  # Exact match
+            return True
+        if fnmatch.fnmatch(item_string, blacklisted_item): # Wildcard match
+            return True
+    return False
+
+def is_item_whitelisted(item_string, whitelist):
+    """
+    Checks if an item string is whitelisted, considering both exact matches and wildcards.
+
+    Args:
+        item_string: The string to check against the whitelist.
+        whitelist: A list of strings representing the whitelist, including wildcards.
+
+    Returns:
+        True if the item string is whitelisted, False otherwise.
+    """
+    for whitelisted_item in whitelist:
+        if whitelisted_item == item_string:  # Exact match
+            return True
+        if fnmatch.fnmatch(item_string, whitelisted_item): # Wildcard match
+            return True
+    return False
 
 
 def get_sitemap_urls(sitemap_url):
@@ -419,3 +460,100 @@ def get_website_pdfs(content_source, delete_existing_files=True):
         new_doc_array.append(doc)
 
     return new_doc_array
+
+
+def get_google_drive_documents(content_source):
+    """
+    Loads and processes documents from Google Drive based on the content source configuration.
+    You will need to configure the GOOGLE_SERVICE_ACCOUNT_FILE environment variable with the path to your service account file.
+
+    :param content_source: Dictionary defining the Google Drive source and filtering criteria.
+      location in the content source should be the folder ID.
+    :return: List of processed Google Drive documents.
+    """
+    blacklist = content_source.get('blacklist', [])
+    whitelist = content_source.get('whitelist', [])
+
+    if content_source['type'] != 'Google Drive':
+        raise (f"ERROR: Cannot handle loading documents of type {content_source['type']}")
+
+    folder_id = content_source.get('location')
+    if not folder_id:
+        raise ValueError("ERROR: Google Drive folder ID not provided.")
+    print(f"Reading Google Drive documents from folder ID {folder_id}")
+
+    # 1. Service Account Setup (Same as before):
+    service_account_file = os.getenv('GOOGLE_SERVICE_ACCOUNT_FILE')
+    scopes = ['https://www.googleapis.com/auth/drive.readonly']  # Read-only access is sufficient here
+    credentials = service_account.Credentials.from_service_account_file(
+        service_account_file, scopes=scopes)
+    service = build('drive', 'v3', credentials=credentials)
+
+    # 2. Get Files from Google Drive (using the direct API call):
+    results = service.files().list(
+        q=f"'{folder_id}' in parents",
+        pageSize=1000,  # Increased page size to avoid pagination issues
+        fields="nextPageToken, files(id, name, mimeType)").execute()
+    files = results.get('files', [])
+    print(f"Found {len(files)} files in Google Drive folder")
+
+    # 3. Load and Process Files with LangChain:
+    documents = []
+    chunk_size = content_source.get('chunk_size', DEFAULT_CHUNK_SIZE)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=round(chunk_size * 0.15),
+        length_function=len,
+    )
+
+    for file in files:
+        file_id = file['id']
+        file_name = file['name']
+        mime_type = file['mimeType']
+
+        # If we have a whitelist, this file must be in the whitelist to be processed
+        if len(whitelist) > 0 and not is_item_whitelisted(file_name, whitelist):
+            continue
+
+        # If the item is in the blacklist, skip it
+        if is_item_blacklisted(file_name, blacklist):
+            print(f"Skipping blacklisted file: {file_name}")
+            continue
+
+        # Download file content based on MIME Type
+        if mime_type == 'application/vnd.google-apps.document':  # Google Docs
+            request = service.files().export_media(fileId=file_id, mimeType='text/plain')
+            file_content = request.execute()
+            file_content = file_content.decode('utf-8')  # Decode from bytes to str
+        elif mime_type.startswith('text/'):  # Text files
+            request = service.files().get_media(fileId=file_id)
+            file_content = request.execute()
+            file_content = file_content.decode('utf-8')
+        elif mime_type == 'application/pdf':  # PDF files
+            from langchain.document_loaders import PDFMinerLoader  # PDF Loader
+            request = service.files().get_media(fileId=file_id)
+            file_content = request.execute()
+            with open(f"{file_name}.pdf", "wb") as f:  # Save to temporary file
+                f.write(file_content)
+            loader = PDFMinerLoader(f"{file_name}.pdf")  # Load from the temp file
+            docs = loader.load()
+            os.remove(f"{file_name}.pdf")  # Delete the temp file
+            for doc in docs:  # Split PDF into chunks
+                chunks = text_splitter.split_text(doc.page_content)
+                for i, chunk in enumerate(chunks):
+                    metadata = {"source": file_name, "chunk": i}
+                    langchain_doc = Document(page_content=chunk, metadata=metadata)
+                    documents.append(langchain_doc)
+            continue  # Skip to next file
+        else:
+            print(f"Unsupported MIME type: {mime_type} for file: {file_name}")
+            continue
+
+        if file_content:  # Handle cases where file_content might be None
+            chunks = text_splitter.split_text(file_content)  # Split the text into chunks
+            for i, chunk in enumerate(chunks):
+                metadata = {"source": file_name, "chunk": i}  # Add metadata
+                langchain_doc = Document(page_content=chunk, metadata=metadata)
+                documents.append(langchain_doc)
+
+    return documents

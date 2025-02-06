@@ -1,5 +1,7 @@
 import unittest
 import os
+from dotenv import load_dotenv, find_dotenv
+
 from vector_database_loader.document_processing_utils import (
     get_sitemap_urls,
     website_crawler,
@@ -8,7 +10,10 @@ from vector_database_loader.document_processing_utils import (
     blacklist_url_filter,
     url_whitelist,
     get_website_documents,
+    get_google_drive_documents
 )
+
+load_dotenv(find_dotenv())
 
 class MyTestCase(unittest.TestCase):
     def test_get_sitemap_urls(self):
@@ -103,6 +108,44 @@ class MyTestCase(unittest.TestCase):
         docs = get_website_documents(content_source)
         print(f"Found {len(docs)} documents")
         self.assertTrue(len(docs) > 0)
+
+    def test_get_google_drive_documents(self):
+        # The location in this case is the google drive folder ID
+        # You can get this from the URL when you are in the folder
+        # You will need to enable the Google Drive API and create a service account
+        # and then configure the local service account file path in the .env file GOOGLE_SERVICE_ACCOUNT_FILE
+
+        content_source = {"name": "Test Google Drive",
+                          "type": "Google Drive",
+                          "location": "1chQNbpiaozntsP5obMnSeBl1DgW8EBd9"
+                          }
+
+        docs = get_google_drive_documents(content_source)
+        fill_doc_count = len(docs)
+        print(f"Found {len(docs)} documents")
+        self.assertTrue(len(docs) > 0)
+
+        # Test with a blacklist
+        content_source["blacklist"] = ["Medium*"]
+
+        docs = get_google_drive_documents(content_source)
+        print(f"Found {len(docs)} documents with blacklist")
+        self.assertTrue(len(docs) < fill_doc_count)
+
+        # Test with a whitelist
+        content_source.pop("blacklist")
+        content_source["whitelist"] = ["Medium*"]
+
+        docs = get_google_drive_documents(content_source)
+        print(f"Found {len(docs)} documents with whitelist")
+        self.assertTrue(len(docs) > 0)
+
+        self.assertTrue(len(docs) < fill_doc_count)
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,8 +10,10 @@ A use case for this type of project is discussed in more depth in the blog [A Co
 More vector databases will be added, but if needed you can fork the project and handle your own needs by extending the base class.  
 - **Embedding Support** - You can use any embedding provided by [Langchain](https://python.langchain.com/docs/integrations/text_embedding/), which includes OpenAI, AWS Bedrock, HuggingFace, Cohere and much, much more.
 - **Content Curation** - The framework is built configure some common content types and sources, but again is meant to be extended a needed.
-  - Sources include websites and local folders
-  - Types include PDF, Word, and Web content
+  - Sources include websites, local folders and google drive
+  - Types include PDF, Word, and Web content and google docs
+- **Text Splitter** - This framework uses the [RecursiveCharacterTextSplitter](https://python.langchain.com/v0.1/docs/modules/data_connection/document_transformers/recursive_text_splitter/) from LangChain.  
+This is a powerful tool that can split text into chunks of a specified size, while maintaining the context of the text.  This is especially useful for long documents like web pages or PDFs.
 
 ## Example
 ```python
@@ -72,7 +74,7 @@ This project also using Poetry, so you will need to have that installed as well.
 ## Roadmap
 - Add support for more vector databases.  Shortlist is: [Milvus](https://milvus.io/) and [Weaviate](https://weaviate.io/)
 https://python.langchain.com/docs/integrations/vectorstores/ 
-- Add support for more sources.  Shortlist: Google Drive, AWS S3 folder.  
+- Add support for more sources.  Shortlist: AWS S3 folder.  
 https://python.langchain.com/docs/integrations/document_loaders/#cloud-providers 
 
 
