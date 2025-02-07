@@ -69,6 +69,12 @@ This project also using Poetry, so you will need to have that installed as well.
 6. Create a .env file in the root directory.  See .evn.example for the required variables
 7. Run the example: `python example.py`
 
+### Using PyPi Package
+[https://pypi.org/project/vector-database-loader/](https://pypi.org/project/vector-database-loader/)
+
+```bash
+pip install vector-database-loader
+```
 
 
 ## Roadmap
