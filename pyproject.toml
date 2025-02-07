@@ -1,10 +1,13 @@
 [tool.poetry]
 name = "vector-database-loader"
-version = "0.1.0"
-description = ""
-authors = ["danjamk <dan@risegardens.com>"]
+version = "0.1.4"
+description = "A generalized tool for currating and loading content into vector databases"
+authors = ["danjamk"]
 license = "MIT"
-readme = "README.md"
+readme = "README-PYPI.md"
+repository = "https://github.com/danjamk/vector-database-loader"
+homepage = "https://github.com/danjamk/vector-database-loader"
+keywords = ["vector", "database", "loader", "milvus", "langchain", "pinecone"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
