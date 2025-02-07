@@ -4,6 +4,7 @@ from dotenv import load_dotenv, find_dotenv
 
 from vector_database_loader.pinecone_vectory_db import PineconeVectorLoader
 from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 web_page_content_source =  {"name": "SpaceX", "type": "Website", "items": [
         "https://en.wikipedia.org/wiki/SpaceX"
@@ -13,7 +14,7 @@ web_page_content_source =  {"name": "SpaceX", "type": "Website", "items": [
 load_dotenv(find_dotenv())
 
 class LoaderTestCases(unittest.TestCase):
-    def test_load_webpage(self):
+    def test_load_webpage_openai_embedding(self):
         #embedding_model = EmbeddingModels.OPENAI_GPT_V3LARGE
         embedding_client = OpenAIEmbeddings()
 
@@ -22,6 +23,24 @@ class LoaderTestCases(unittest.TestCase):
 
         # # assert that I have an embedding model with gpt in the text
         # self.assertTrue('gpt' in embedding_model['name'])
+
+        vector_db = PineconeVectorLoader(index_name=index_name,
+                                         embedding_client=embedding_client)
+        doc_count = vector_db.load_sources(content_sources, delete_index=True)
+        print(f"Loaded {doc_count} documents into {index_name}")
+        self.assertTrue(doc_count > 0)
+
+    def test_load_webpage_huggingface_local_embedding(self):
+        model_kwargs = {'device': 'cpu'}
+        encode_kwargs = {'normalize_embeddings': False}
+        model_name = "BAAI/bge-large-en"  # 1024
+        embedding_client = HuggingFaceEmbeddings(
+            model_name=model_name,
+            model_kwargs=model_kwargs,
+            encode_kwargs=encode_kwargs
+        )
+        content_sources = [web_page_content_source]
+        index_name = "test-webpage-index-loader"
 
         vector_db = PineconeVectorLoader(index_name=index_name,
                                          embedding_client=embedding_client)
