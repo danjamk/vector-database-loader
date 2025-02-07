@@ -3,7 +3,7 @@ import time
 from dotenv import load_dotenv, find_dotenv
 from langchain_openai import OpenAIEmbeddings
 
-from vector_database_loader.pinecone_vectory_db import PineconeVectorLoader, PineconeVectorQuery
+from vector_database_loader.pinecone_vector_db import PineconeVectorLoader, PineconeVectorQuery
 
 
 # Define your content sources and add them to the array

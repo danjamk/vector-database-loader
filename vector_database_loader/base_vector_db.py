@@ -101,6 +101,20 @@ class BaseVectorLoader:
     def delete_index(self, index_name=None):
         raise NotImplementedError
 
+    def get_vector_dimension_size(self):
+        """
+        Get the dimension size of the vector embeddings.
+
+        :return: The dimension size of the vector embeddings.
+        """
+        embedding_vector = self.embedding_client.embed_query(
+            "Some string to determine embedding dimensional size to create the index")
+        dimension_size = len(embedding_vector)
+        return dimension_size
+
+    def describe_index(self, index_name=None):
+        raise NotImplementedError
+
 
 class BaseVectorQuery:
     """

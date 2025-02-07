@@ -5,7 +5,6 @@ from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone, ServerlessSpec
 from vector_database_loader.base_vector_db import (
     BaseVectorLoader,
-    # get_embedding,
     BaseVectorQuery
 )
 from pinecone.exceptions import NotFoundException
@@ -67,9 +66,7 @@ class PineconeVectorLoader(BaseVectorLoader):
         if index_name is None:
             index_name = self.index_name
 
-        embedding_vector = embedding_client.embed_query(
-            "Some string to determine embedding dimensional size to create the index")
-        dimension_size = len(embedding_vector)
+        dimension_size = self.get_vector_dimension_size()
 
         pinecone_api_key = os.getenv('PINECONE_API_KEY')
         pc = Pinecone(api_key=pinecone_api_key)
