@@ -26,6 +26,7 @@ google-auth-httplib2 = "^0.2.0"
 google-auth-oauthlib = "^1.2.1"
 pymilvus = "^2.5.4"
 langchain-milvus = "^0.1.8"
+langchain-huggingface = "^0.1.2"
 
 
 [build-system]
