@@ -52,8 +52,11 @@ class TestMilvusVDBQuery(unittest.TestCase):
         self.assertTrue(len(documents) > 0)
         print(f"Query: {query} returned {len(documents)} results")
         for doc in documents:
-            print(f"   {doc.metadata['title']}")
-            print(f"   {doc.page_content}")
+            print(doc)
+            print(f"   {doc['distance']}")
+            print(f"   {doc['entity']['source']}")
+            print(f"   {doc['entity']['title']}")
+            print(f"   {doc['entity']['page_content']}")
 
 
 

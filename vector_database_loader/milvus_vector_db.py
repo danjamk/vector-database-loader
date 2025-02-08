@@ -19,6 +19,8 @@ def create_vdb_row_from_document(document, embedding_client):
     vector = embedding_client.embed_query(document.page_content)
     doc_metadata = document.metadata
 
+    # TODO: make this generic, and enumerate the fields in the document metadata
+
     vdb_row = {
         "vector": vector,
         "source": doc_metadata.get("source", ""),
@@ -183,9 +185,11 @@ class MilvusVectorQuery(BaseVectorQuery):
         query_vector = self.embedding_client.embed_query(query)
 
         query_results = self.milvus_client.search(
-            self.index_name,
-            query_vector,
+            collection_name=self.index_name,
+            data=[query_vector],
             limit=num_results,
             output_fields=["title", "description", "source", "language", "page_content"]
         )
-        return query_results
+        # TODO: Convert this intp a list of document objects
+
+        return query_results[0]
