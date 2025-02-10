@@ -6,7 +6,8 @@ a RAG application or similar, the quality and relevance of the content is critic
 A use case for this type of project is discussed in more depth in the blog [A Cost-Effective AI Chatbot Architecture with AWS Bedrock, Lambda, and Pinecone](https://medium.com/@dan.jam.kuhn/a-cost-effective-ai-chatbot-architecture-with-aws-bedrock-lambda-and-pinecone-40935b9ec361)
 
 ## Features
-- **Vector Database Support** - The framework is built to support multiple vector databases but is currently implementing support for [Pinecone](https://www.pinecone.io/).
+- **Vector Database Support** - The framework is built to support multiple vector databases but is currently implementing support for [Pinecone](https://www.pinecone.io/) and [Milvus](https://milvus.io/) cloud version at [Zilliz](https://zilliz.com/).
+Note that there are few standards in vector databases and each has its own unique features.  This framework is meant to abstract some of those differences.  But each new variant may require some customization.
 More vector databases will be added, but if needed you can fork the project and handle your own needs by extending the base class.  
 - **Embedding Support** - You can use any embedding provided by [Langchain](https://python.langchain.com/docs/integrations/text_embedding/), which includes OpenAI, AWS Bedrock, HuggingFace, Cohere and much, much more.
 - **Content Curation** - The framework is built configure some common content types and sources, but again is meant to be extended a needed.
@@ -63,7 +64,7 @@ This project also using Poetry, so you will need to have that installed as well.
 4. Activate the virtual environment:
     - On Windows: `.venv\Scripts\activate`
     - On macOS/Linux: `source .venv/bin/activate`
-5. Run `poetry install` to install the dependencies
+5. Run `poetry install --with test` to install the dependencies
 6. Create a .env file in the root directory.  See .evn.example for the required variables
 7. Run the example: `python example.py`
 
@@ -76,7 +77,7 @@ pip install vector-database-loader
 
 
 ## Roadmap
-- Add support for more vector databases.  Shortlist is: [Milvus](https://milvus.io/) and [Weaviate](https://weaviate.io/)
+- Add support for more vector databases.  Shortlist is: [Weaviate](https://weaviate.io/)
 https://python.langchain.com/docs/integrations/vectorstores/ 
 - Add support for more sources.  Shortlist: AWS S3 folder.  
 https://python.langchain.com/docs/integrations/document_loaders/#cloud-providers 

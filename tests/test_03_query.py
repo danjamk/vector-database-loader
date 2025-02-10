@@ -34,15 +34,7 @@ class TestPineconeVDBQuery(unittest.TestCase):
 class TestMilvusVDBQuery(unittest.TestCase):
 
     def test_query_webpage_index(self):
-        model_kwargs = {'device': 'cpu'}
-        encode_kwargs = {'normalize_embeddings': False}
-        model_name = "BAAI/bge-large-en"  # 1024
-        embedding_client = HuggingFaceEmbeddings(
-            model_name=model_name,
-            model_kwargs=model_kwargs,
-            encode_kwargs=encode_kwargs
-        )
-
+        embedding_client = OpenAIEmbeddings()
         index_name = "test_webpage_index_loader"
         vector_db = MilvusVectorQuery(index_name=index_name,
                                         embedding_client=embedding_client)
@@ -53,10 +45,8 @@ class TestMilvusVDBQuery(unittest.TestCase):
         print(f"Query: {query} returned {len(documents)} results")
         for doc in documents:
             print(doc)
-            print(f"   {doc['distance']}")
-            print(f"   {doc['entity']['source']}")
-            print(f"   {doc['entity']['title']}")
-            print(f"   {doc['entity']['page_content']}")
+            print(f"   {doc.metadata['title']}")
+            print(f"   {doc.page_content}")
 
 
 

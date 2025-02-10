@@ -1,36 +1,39 @@
 import os
 
 from pymilvus import MilvusClient
+from langchain_community.vectorstores import Milvus
 
 from vector_database_loader.base_vector_db import (
     BaseVectorLoader,
     BaseVectorQuery
 )
 
+# https://python.langchain.com/docs/integrations/vectorstores/zilliz/
 
-def create_vdb_row_from_document(document, embedding_client):
+def get_milvus_client():
     """
-    Create a vector from a document using the embedding client.
+    Get a Milvus client instance.
 
-    :param document: The document to create a vector from.
-    :param embedding_client: The LangChain embedding client to be used.
-    :return: A vector representation of the document.
+    :return: A Milvus client instance.
     """
-    vector = embedding_client.embed_query(document.page_content)
-    doc_metadata = document.metadata
+    milvus_cloud_uri = os.getenv('ZILLIZ_CLOUD_URI')
+    if milvus_cloud_uri is None:
+        raise ValueError("ZILLIZ_CLOUD_URI environment variable not set.  This is your hosted endpoint URL")
 
-    # TODO: make this generic, and enumerate the fields in the document metadata
+    milvus_username = os.getenv('ZILLIZ_CLOUD_USERNAME')
+    if milvus_username is None:
+        raise ValueError("ZILLIZ_CLOUD_USERNAME environment variable not set.  This is your userid")
 
-    vdb_row = {
-        "vector": vector,
-        "source": doc_metadata.get("source", ""),
-        "title": doc_metadata.get("title", ""),
-        "description": doc_metadata.get("description", ""),
-        "language": doc_metadata.get("language", ""),
-        "page_content": document.page_content
-    }
+    milvus_password = os.getenv('ZILLIZ_CLOUD_PASSWORD')
+    if milvus_password is None:
+        raise ValueError("ZILLIZ_CLOUD_PASSWORD environment variable not set.  This is your password")
 
-    return vdb_row
+    milvus_client = MilvusClient(
+        uri=milvus_cloud_uri,
+        token=f"{milvus_username}:{milvus_password}"
+    )
+    return milvus_client
+
 
 
 class MilvusVectorLoader(BaseVectorLoader):
@@ -39,50 +42,43 @@ class MilvusVectorLoader(BaseVectorLoader):
     """
     milvus_client = None
 
-    def __init__(self, index_name, embedding_client):
-        # execute base class constructor
-        super().__init__(index_name, embedding_client)
-        # Now create a Milvus client
-        # Authentication enabled with a cluster user and password
-        milvus_uri = os.getenv('MILVUS_HOST')
-        if milvus_uri is None:
-            raise ValueError("MILVUS_HOST environment variable not set.  This is your hosted endpoint URL")
-
-        milvus_token = os.getenv('MILVUS_TOKEN') # this is actually a userid and password, not a token
-        if milvus_token is None:
-            raise ValueError("MILVUS_TOKEN environment variable not set.  This is your userid and password")
-
-        self.milvus_client = MilvusClient(
-            uri=milvus_uri,
-            token=milvus_token
-        )
-        print("Connected to Milvus")
-
-    def load_document_batch(self, document_set, delete_index=False):
+    def load_document_batch(self, document_set):
         """
         Loads a batch of document embeddings into the vector database.
 
         :param document_set: A list of document chunks to be embedded and stored.
-        :param delete_index: Boolean flag indicating whether to delete the index before loading.
         :return: The Pinecone vector database instance.
         """
 
-        # Convert the documents to the proper structure to load into Milvus
-        document_rows = []
-        print(f"   Preparing {len(document_set)} document chunks into vector rows")
-        for document in document_set:
-            vdb_row = create_vdb_row_from_document(document, self.embedding_client)
-            document_rows.append(vdb_row)
-            # print(f" vector row count: {len(document_rows)}")
+        milvus_cloud_uri = os.getenv('ZILLIZ_CLOUD_URI')
+        if milvus_cloud_uri is None:
+            raise ValueError("ZILLIZ_CLOUD_URI environment variable not set.  This is your hosted endpoint URL")
 
+        milvus_username = os.getenv('ZILLIZ_CLOUD_USERNAME')
+        if milvus_username is None:
+            raise ValueError("ZILLIZ_CLOUD_USERNAME environment variable not set.  This is your userid")
 
+        milvus_password = os.getenv('ZILLIZ_CLOUD_PASSWORD')
+        if milvus_password is None:
+            raise ValueError("ZILLIZ_CLOUD_PASSWORD environment variable not set.  This is your password")
 
-        print(f"   Loading {len(document_set)} document chunks into VDB index {self.index_name}")
-        print("Start inserting entities")
-        insert_result = self.milvus_client.insert(self.index_name, document_rows, progress_bar=True)
-        print("Inserting entities done")
-        print(len(insert_result))
-        return len(insert_result)
+        # TODO: Handle serverless clusters with a token
+
+        vector_db = Milvus.from_documents(
+            document_set,
+            self.embedding_client,
+            collection_name=self.index_name,
+            # drop_old=delete_index,
+            # auto_id=True,
+            connection_args={
+                "uri": milvus_cloud_uri,
+                "user": milvus_username,
+                "password": milvus_password,
+                # "token": ZILLIZ_CLOUD_API_KEY,  # API key, for serverless clusters which can be used as replacements for user and password
+                "secure": True,
+            },
+        )
+
 
     def index_exists(self, index_name=None):
         """
@@ -93,6 +89,9 @@ class MilvusVectorLoader(BaseVectorLoader):
         """
         if index_name is None:
             index_name = self.index_name
+
+        if self.milvus_client is None:
+            self.milvus_client = get_milvus_client()
 
         has_collection = self.milvus_client.has_collection(index_name, timeout=5)
         return has_collection
@@ -106,6 +105,9 @@ class MilvusVectorLoader(BaseVectorLoader):
         """
         if index_name is None:
             index_name = self.index_name
+
+        if self.milvus_client is None:
+            self.milvus_client = get_milvus_client()
 
         if self.index_exists(index_name):
             self.milvus_client.drop_collection(index_name)
@@ -127,6 +129,9 @@ class MilvusVectorLoader(BaseVectorLoader):
 
         dimension_size = self.get_vector_dimension_size()
 
+        if self.milvus_client is None:
+            self.milvus_client = get_milvus_client()
+
         self.milvus_client.create_collection(
             index_name,
             dimension_size,
@@ -144,6 +149,9 @@ class MilvusVectorLoader(BaseVectorLoader):
         if index_name is None:
             index_name = self.index_name
 
+        if self.milvus_client is None:
+            self.milvus_client = get_milvus_client()
+
         return self.milvus_client.describe_collection(index_name)
 
 
@@ -151,45 +159,32 @@ class MilvusVectorQuery(BaseVectorQuery):
     """
     Handles querying a Milvus vector database index.
     """
-    milvus_client = None
 
-    def __init__(self, index_name, embedding_client):
-        self.index_name = index_name
-        self.embedding_client = embedding_client
-       # Now create a Milvus client
-        # Authentication enabled with a cluster user and password
-        milvus_uri = os.getenv('MILVUS_HOST')
-        if milvus_uri is None:
-            raise ValueError("MILVUS_HOST environment variable not set.  This is your hosted endpoint URL")
+    def get_client(self):
 
-        milvus_token = os.getenv('MILVUS_TOKEN') # this is actually a userid and password, not a token
-        if milvus_token is None:
-            raise ValueError("MILVUS_TOKEN environment variable not set.  This is your userid and password")
+        milvus_cloud_uri = os.getenv('ZILLIZ_CLOUD_URI')
+        if milvus_cloud_uri is None:
+            raise ValueError("ZILLIZ_CLOUD_URI environment variable not set.  This is your hosted endpoint URL")
 
-        self.milvus_client = MilvusClient(
-            uri=milvus_uri,
-            token=milvus_token
-        )
-        print("Connected to Milvus")
+        milvus_username = os.getenv('ZILLIZ_CLOUD_USERNAME')
+        if milvus_username is None:
+            raise ValueError("ZILLIZ_CLOUD_USERNAME environment variable not set.  This is your userid")
 
-    def query(self, query, num_results=5):
-        """
-        Queries the Milvus collection for the nearest neighbors of a query vector.
+        milvus_password = os.getenv('ZILLIZ_CLOUD_PASSWORD')
+        if milvus_password is None:
+            raise ValueError("ZILLIZ_CLOUD_PASSWORD environment variable not set.  This is your password")
 
-        :param query: The query text.
-        :param num_results: The number of nearest neighbors to return.
-        :return: The nearest neighbors of the query vector.
-        """
+        # TODO: Handle serverless clusters with a token
 
-        # Convert the query text to a vevtor
-        query_vector = self.embedding_client.embed_query(query)
-
-        query_results = self.milvus_client.search(
+        vdb = Milvus(
+            self.embedding_client,
             collection_name=self.index_name,
-            data=[query_vector],
-            limit=num_results,
-            output_fields=["title", "description", "source", "language", "page_content"]
+            connection_args={
+                "uri": milvus_cloud_uri,
+                "user": milvus_username,
+                "password": milvus_password,
+                # "token": ZILLIZ_CLOUD_API_KEY,  # API key, for serverless clusters which can be used as replacements for user and password
+                "secure": True,
+            },
         )
-        # TODO: Convert this intp a list of document objects
-
-        return query_results[0]
+        return vdb

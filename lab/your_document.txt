@@ -1,0 +1,81 @@
+﻿They key to successful offshore teams
+
+
+Many organizations decide to take on outsourcing their technology initiatives and possibly the development of their intellectual product for a wide range of reasons.  I have been working with all forms of this strategy over the past 25 years and have had some hard lessons as well as great successes.  For those heading down this path here are some of the best practices I have built.  Note that this is targeted at organizations outsourcing teams from a few to 40 people. 
+
+
+In-house leadership/stewardship
+Do not relinquish your organization's responsibility for the objective and be sure to provide strong and competent leadership within your own team.  This is particularly important when the initiative is to develop your own intellectual property.  It is natural for many outsourced teams to adjust to the level of demands of the client.  If you are not attentive to the velocity and quality of the product, it will likely be below expectations.  This is hard, because we outsource with desire to have an easy button [image of the easy button].
+
+
+The steward(s) should be actively involved in:
+
+
+* Architecture reviews
+* Code reviews (even if periodic or selective) - you don’t have to be an expert - ask the developer to walk you through and explain,  Ask questions.  This process is valuable for both parties.
+* Hands-on testing - Be part of all new feature testing as well as periodic manual regression to know where your product is.
+* Regular standups and team meetings
+* Interviewing each final candidate - you can let your outsourcing provider do all the hard work, but before you add a person to your team, you should talk with them and be the final approval.
+
+
+A good measure of health is for the steward to be capable of transitioning the work to another team if ever needed. This means they have enough context to be a good steward of the technology and can adequately care for your intellectual property.  
+
+
+
+
+Assign outcomes not tasks
+I have encountered lots of issues when you tell a team what to do instead of telling them what outcome you want.  You get what you asked for, not what you want.  I approach it much differently.  First I provide the business context of why we are doing something and what outcomes I expect (business metrics, timeline, cost, constraints, etc.).  Then I provide one or more examples of how I might address it allowing the team to collaborate with me (or amongst themselves) on the solution that best meets our objectives. Only then are specific tasks and specs created - and in many cases by the team themselves.  This radically changes the disposition of the team.  They can make their own decisions on implementation as needed, they are invested and aligned with the effort and understand what success means.  This also optimizes the communication needed - meaning you can use higher-level, more efficient artifacts instead of mind-numbing details and specs.  This approach folds very nicely into lean and agile processes.  
+
+
+To make sure this is working, I use an approach of having people on the team create artifacts and communications that ensure they understand the needs and we are on the same page.  This can be particularly valuable when there may be differences in language and culture.  Some examples of doing this are:
+* Have them create the design documents and review together
+* Have them create the user stories or task details
+* Have them demo early prototypes 
+
+
+Ask the team to repeat back expectations
+* This can be to have them repeat something after processing, or create the task, specs or design.
+
+
+
+
+Make them part of the organization
+Weave them into the culture and the rest of the org - make sure that they know important people in your organization and that key people know your developers by name.  Ideally they have opportunities to meet.  It is common to develop an “us vs. them” culture, which can be very problematic and hard to change.  
+
+
+Get to know them - I like to spend a few minutes at the start of a meeting just finding out how people are doing, digging into details to learn.  We talk about cultural topics, family, etc.
+
+
+Choose video over chat whenever possible - and be ready to start a video meeting for even the shortest ad-hoc conversation.
+
+
+Use good collaboration tools
+* Video meeting - zoom, teams, google are probably the most prolific
+* Source control - GitHub or similar
+* Chat, slack is my favorite 
+* Content sharing - shared cloud drives are key - allowing a wide range of document types.  A wiki may also be valuable, although I find that more challenging to have the business be key contributors with.  
+* Task management - Atlassian’s jira is a great tool, but there are lots of other great options out there.
+
+
+Trust your gut and use metrics responsibly
+I am passionate about collecting and using data while at the same time being a very intuitive decision maker.  I find that what gets measured gets managed (even on a personal scope).  I also find that data can be very misguided and used irresponsibly.
+
+
+What metrics to focus on
+I usually focus on outcomes, not internal metrics that have no meaning and deflace the developers motivation.  I like to have an objective like engagement, feature adoption, etc. - as opposed to story point velocity, lines of code, etc.  Many times these are bespoke to the specific initiative.  I like to start first by understanding the goal and seeing if there is a baseline measure we can have. Then setting a measurable goal and striving for that.  This is empowering for the team and can create great transparency and trust in your stakeholders.  
+
+
+What metrics NOT to focus on
+Don’t get bogged down in what some call “vanity” metrics.  Things like lines of code, velocity and ticket rates, estimation quality/errors, issue blaming metrics, etc.  These can be hugely biased by the type of role or developer, the area of code they are working on, the stage of life of the application, etc.  It is appropriate to use them to learn and investigate problematic areas, but I would not use them as an ongoing metric to share with the team.  An example I experienced recently was the customer support team focusing heavily on meeting SLA’s for response times - although valuable, meeting them might be at the cost of customer satisfaction and retention or even budget.  
+
+
+In the end, trust your judgment.  If you sense issues and areas of strength, you are likely right.  Regarding metrics, I like to think of metrics as members of the board.  You elicit their input, you weigh it against a broad range of factors and then make a decision based on your gut.  
+
+
+
+
+Conclusion
+I have seen a lot of organizational experience disasters trying to outsource.  If the project you are outsourcing is important to your business, avoid the tendency to relinquish all responsibility to your outsourcing partner.  Making it successful, means being deeply involved.  
+
+
+There are many other factors on strong leadership that apply to being successful that are not covered.  Poor leadership can undermine success even if you do these things.

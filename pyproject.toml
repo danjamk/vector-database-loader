@@ -15,7 +15,6 @@ python-dotenv = "^1.0.1"
 langchain-openai = "^0.3.2"
 langchain-community = "^0.3.16"
 colorama = "^0.4.6"
-nltk = "^3.9.1"
 langchain-pinecone = "^0.2.2"
 selenium = "^4.28.1"
 unstructured = "^0.16.17"
@@ -26,8 +25,10 @@ google-auth-httplib2 = "^0.2.0"
 google-auth-oauthlib = "^1.2.1"
 pymilvus = "^2.5.4"
 langchain-milvus = "^0.1.8"
-langchain-huggingface = "^0.1.2"
 
+[tool.poetry.group.test]
+nltk = "^3.9.1"
+langchain-huggingface = "^0.1.2"
 
 [build-system]
 requires = ["poetry-core"]
