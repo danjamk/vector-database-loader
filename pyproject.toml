@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vector-database-loader"
-version = "0.1.4"
+version = "0.2.0"
 description = "A generalized tool for currating and loading content into vector databases"
 authors = ["danjamk"]
 license = "MIT"
@@ -26,7 +26,7 @@ google-auth-oauthlib = "^1.2.1"
 pymilvus = "^2.5.4"
 langchain-milvus = "^0.1.8"
 
-[tool.poetry.group.test]
+[tool.poetry.group.test.dependencies]
 nltk = "^3.9.1"
 langchain-huggingface = "^0.1.2"
 
