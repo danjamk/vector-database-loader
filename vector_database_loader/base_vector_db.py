@@ -40,7 +40,7 @@ class BaseVectorLoader:
 
         for content_source in content:
             print(f"Processing content for {content_source['name']} ")
-            print_progress("Load Source", source_count + 1, len(content), content_source['name'])
+            # print_progress("Load Source", source_count + 1, len(content), content_source['name'])
 
             if content_source['type'] == 'Website':
                 content_docs = get_website_documents(content_source)
@@ -71,9 +71,6 @@ class BaseVectorLoader:
         index_exists = self.index_exists()
         if index_exists and delete_index:
             self.delete_index()
-            self.create_index()
-        elif not index_exists:
-            self.create_index()
 
         batch_size = 500
         total_batches = len(document_set) // batch_size + (1 if len(document_set) % batch_size > 0 else 0)
@@ -90,7 +87,7 @@ class BaseVectorLoader:
         """
         Load a batch of documents. To be implemented in subclasses.
         """
-        pass
+        raise NotImplementedError
 
     def index_exists(self, index_name=None):
         raise NotImplementedError
@@ -99,6 +96,20 @@ class BaseVectorLoader:
         raise NotImplementedError
 
     def delete_index(self, index_name=None):
+        raise NotImplementedError
+
+    def get_vector_dimension_size(self):
+        """
+        Get the dimension size of the vector embeddings.
+
+        :return: The dimension size of the vector embeddings.
+        """
+        embedding_vector = self.embedding_client.embed_query(
+            "Some string to determine embedding dimensional size to create the index")
+        dimension_size = len(embedding_vector)
+        return dimension_size
+
+    def describe_index(self, index_name=None):
         raise NotImplementedError
 
 

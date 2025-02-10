@@ -92,6 +92,20 @@ def document_chunker(documents, chunk_size):
     docs_chunks = text_splitter.split_documents(documents)
     print(f"Chunked {len(documents)} documents into {len(docs_chunks)} chunks. Size={chunk_size}")
 
+    # Now extend metadata to make all sources consistent: we need source, title, language, description
+    for doc in docs_chunks:
+        if 'source' not in doc.metadata:
+            doc.metadata['source'] = 'Unknown'
+
+        if 'title' not in doc.metadata:
+            doc.metadata['title'] = doc.metadata['source']
+
+        if 'language' not in doc.metadata:
+            doc.metadata['language'] = 'en'
+
+        if 'description' not in doc.metadata:
+            doc.metadata['description'] = 'None'
+
     return docs_chunks
 
 

@@ -5,7 +5,6 @@ from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone, ServerlessSpec
 from vector_database_loader.base_vector_db import (
     BaseVectorLoader,
-    # get_embedding,
     BaseVectorQuery
 )
 from pinecone.exceptions import NotFoundException
@@ -18,6 +17,9 @@ def list_indexes():
     :return: A list of index names.
     """
     pinecone_api_key = os.getenv('PINECONE_API_KEY')
+    if pinecone_api_key is None:
+        raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
     pc = Pinecone(api_key=pinecone_api_key)
     indexes = pc.list_indexes()
     return indexes
@@ -28,15 +30,21 @@ class PineconeVectorLoader(BaseVectorLoader):
     Handles loading document embeddings into a Pinecone vector database index.
     """
 
-    def load_document_batch(self, document_set, delete_index=False):
+    def load_document_batch(self, document_set):
         """
         Loads a batch of document embeddings into the vector database.
 
         :param document_set: A list of document chunks to be embedded and stored.
-        :param delete_index: Boolean flag indicating whether to delete the index before loading.
         :return: The Pinecone vector database instance.
         """
         print(f"   Loading {len(document_set)} document chunks into VDB index {self.index_name}")
+        pinecone_api_key = os.getenv('PINECONE_API_KEY')  # This is used by the underlying calls, so lets check
+        if pinecone_api_key is None:
+            raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
+        if not self.index_exists():  #pinecone does not create indexes from docs, so create it first
+            self.create_index()
+
         vdb = PineconeVectorStore.from_documents(document_set, self.embedding_client, index_name=self.index_name)
         return vdb
 
@@ -67,11 +75,12 @@ class PineconeVectorLoader(BaseVectorLoader):
         if index_name is None:
             index_name = self.index_name
 
-        embedding_vector = embedding_client.embed_query(
-            "Some string to determine embedding dimensional size to create the index")
-        dimension_size = len(embedding_vector)
+        dimension_size = self.get_vector_dimension_size()
 
         pinecone_api_key = os.getenv('PINECONE_API_KEY')
+        if pinecone_api_key is None:
+            raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
         pc = Pinecone(api_key=pinecone_api_key)
 
         pc.create_index(
@@ -105,6 +114,9 @@ class PineconeVectorLoader(BaseVectorLoader):
             index_name = self.index_name
 
         pinecone_api_key = os.getenv('PINECONE_API_KEY')
+        if pinecone_api_key is None:
+            raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
         pc = Pinecone(api_key=pinecone_api_key)
         try:
             print(f"Deleting index={index_name}")
@@ -125,10 +137,14 @@ class PineconeVectorLoader(BaseVectorLoader):
             index_name = self.index_name
 
         pinecone_api_key = os.getenv('PINECONE_API_KEY')
+        if pinecone_api_key is None:
+            raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
         pc = Pinecone(api_key=pinecone_api_key)
         try:
             print(f"Getting index description for {index_name}")
-            return pc.describe_index(index_name)
+            index_info = pc.describe_index(index_name)
+            return index_info.to_dict()
         except NotFoundException:
             return None
 
@@ -144,6 +160,10 @@ class PineconeVectorQuery(BaseVectorQuery):
 
         :return: PineconeVectorStore client instance.
         """
+        pinecone_api_key = os.getenv('PINECONE_API_KEY')  # This is used by the underlying calls, so lets check
+        if pinecone_api_key is None:
+            raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
         vdb = PineconeVectorStore(index_name=self.index_name, embedding=self.embedding_client)
         return vdb
 
@@ -154,6 +174,9 @@ class PineconeVectorQuery(BaseVectorQuery):
         :return: A dictionary containing the index status and statistics.
         """
         pinecone_api_key = os.getenv('PINECONE_API_KEY')
+        if pinecone_api_key is None:
+            raise ValueError("PINECONE_API_KEY environment variable not set. This is your Pinecone API key.")
+
         pc = Pinecone(api_key=pinecone_api_key)
         index_info = pc.describe_index(self.index_name)
         index_dimension = index_info.dimension
