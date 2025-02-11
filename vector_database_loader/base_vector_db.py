@@ -6,6 +6,7 @@ from vector_database_loader.document_processing_utils import (
     get_website_documents,
     get_folder_documents,
     get_website_pdfs,
+    get_google_drive_documents,
     print_progress
 )
 
@@ -48,6 +49,8 @@ class BaseVectorLoader:
                 content_docs = get_folder_documents(content_source)
             elif content_source['type'] == 'Web PDFs':
                 content_docs = get_website_pdfs(content_source)
+            elif content_source['type'] == 'Google Drive':
+                content_docs = get_google_drive_documents(content_source)
             else:
                 raise ValueError(f"ERROR: Cannot handle loading document type {content_source['type']}")
 

@@ -3,6 +3,8 @@ Loading content info a vector database is relatively easy to do, especially with
 However, the process of curating the content and loading it into the database can be a bit more complex.  If you are building 
 a RAG application or similar, the quality and relevance of the content is critical.  This project is meant to help with that process.
 
+An article discussing this more can be found on medium [Data Pipelines for RAG: A Python Utility for Populating Vector Databases](https://medium.com/@dan.jam.kuhn/data-pipelines-for-rag-a-python-utility-for-populating-vector-databases-3f6c164756e9)
+
 A use case for this type of project is discussed in more depth in the blog [A Cost-Effective AI Chatbot Architecture with AWS Bedrock, Lambda, and Pinecone](https://medium.com/@dan.jam.kuhn/a-cost-effective-ai-chatbot-architecture-with-aws-bedrock-lambda-and-pinecone-40935b9ec361)
 
 ## Features
