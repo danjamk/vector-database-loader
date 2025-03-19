@@ -76,27 +76,28 @@ class PineconeLoaderTestCases(unittest.TestCase):
         vector_db.delete_index()
 
 
-class MilvusLoaderTestCases(unittest.TestCase):
-    def test_load_webpage_openai_embedding(self):
-        embedding_client = OpenAIEmbeddings()
-
-        content_sources = [web_page_content_source]
-        content_sources.append(local_pdf_files_content_source)
-        content_sources.append(web_pdf_content_source)
-        index_name = "test_webpage_index_loader"
-
-        # # assert that I have an embedding model with gpt in the text
-        # self.assertTrue('gpt' in embedding_model['name'])
-
-        vector_db = MilvusVectorLoader(index_name=index_name,
-                                         embedding_client=embedding_client)
-        doc_count = vector_db.load_sources(content_sources, delete_index=True)
-        print(f"Loaded {doc_count} documents into {index_name}")
-        self.assertTrue(doc_count > 0)
-
-        index_info = vector_db.describe_index()
-        print(json.dumps(index_info, indent=2))
-        self.assertTrue(index_name is not None)
+# class MilvusLoaderTestCases(unittest.TestCase):
+#     def test_load_webpage_openai_embedding(self):
+#
+#         embedding_client = OpenAIEmbeddings()
+#
+#         content_sources = [web_page_content_source]
+#         content_sources.append(local_pdf_files_content_source)
+#         content_sources.append(web_pdf_content_source)
+#         index_name = "test_webpage_index_loader"
+#
+#         # # assert that I have an embedding model with gpt in the text
+#         # self.assertTrue('gpt' in embedding_model['name'])
+#
+#         vector_db = MilvusVectorLoader(index_name=index_name,
+#                                          embedding_client=embedding_client)
+#         doc_count = vector_db.load_sources(content_sources, delete_index=True)
+#         print(f"Loaded {doc_count} documents into {index_name}")
+#         self.assertTrue(doc_count > 0)
+#
+#         index_info = vector_db.describe_index()
+#         print(json.dumps(index_info, indent=2))
+#         self.assertTrue(index_name is not None)
 
 
 

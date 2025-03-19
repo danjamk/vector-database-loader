@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "vector-database-loader"
-version = "0.2.0"
+version = "0.2.1"
 description = "A generalized tool for currating and loading content into vector databases"
 authors = ["danjamk"]
 license = "MIT"
 readme = "README-PYPI.md"
 repository = "https://github.com/danjamk/vector-database-loader"
-homepage = "https://github.com/danjamk/vector-database-loader"
+homepage = "https://medium.com/@dan.jam.kuhn/data-pipelines-for-rag-a-python-utility-for-populating-vector-databases-3f6c164756e9"
 keywords = ["vector", "database", "loader", "milvus", "langchain", "pinecone"]
 
 [tool.poetry.dependencies]
