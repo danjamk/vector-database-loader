@@ -1,3 +1,4 @@
+import os
 import unittest
 import time
 
@@ -7,6 +8,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 from vector_database_loader.pinecone_vector_db import PineconeVectorQuery
 from vector_database_loader.milvus_vector_db import MilvusVectorQuery
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 load_dotenv(find_dotenv())
 

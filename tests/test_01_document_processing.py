@@ -1,6 +1,7 @@
 import unittest
 import os
 from dotenv import load_dotenv, find_dotenv
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from vector_database_loader.document_processing_utils import (
     get_sitemap_urls,
@@ -121,7 +122,7 @@ class MyTestCase(unittest.TestCase):
                           }
 
         docs = get_google_drive_documents(content_source)
-        fill_doc_count = len(docs)
+        full_doc_count = len(docs)
         print(f"Found {len(docs)} documents")
         self.assertTrue(len(docs) > 0)
 
@@ -130,7 +131,7 @@ class MyTestCase(unittest.TestCase):
 
         docs = get_google_drive_documents(content_source)
         print(f"Found {len(docs)} documents with blacklist")
-        self.assertTrue(len(docs) < fill_doc_count)
+        self.assertTrue(len(docs) < full_doc_count)
 
         # Test with a whitelist
         content_source.pop("blacklist")
@@ -140,7 +141,7 @@ class MyTestCase(unittest.TestCase):
         print(f"Found {len(docs)} documents with whitelist")
         self.assertTrue(len(docs) > 0)
 
-        self.assertTrue(len(docs) < fill_doc_count)
+        self.assertTrue(len(docs) < full_doc_count)
 
 
 

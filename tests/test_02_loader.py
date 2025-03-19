@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 
 from dotenv import load_dotenv, find_dotenv
@@ -7,6 +8,8 @@ from vector_database_loader.pinecone_vector_db import PineconeVectorLoader
 from vector_database_loader.milvus_vector_db import MilvusVectorLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 web_page_content_source =  {"name": "SpaceX", "type": "Website", "items": [
         "https://en.wikipedia.org/wiki/SpaceX"

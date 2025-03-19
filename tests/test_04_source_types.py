@@ -1,11 +1,12 @@
 import json
+import os
 import unittest
 from dotenv import load_dotenv, find_dotenv
 from langchain_openai import OpenAIEmbeddings
 
 from vector_database_loader.pinecone_vector_db import PineconeVectorLoader
 from vector_database_loader.pinecone_vector_db import PineconeVectorQuery
-
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 full_website_w_blacklist_content_source = {
     "name": "Superlinked",
