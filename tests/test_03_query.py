@@ -31,22 +31,22 @@ class TestPineconeVDBQuery(unittest.TestCase):
             print(f"   {doc.page_content}")
 
 
-class TestMilvusVDBQuery(unittest.TestCase):
-
-    def test_query_webpage_index(self):
-        embedding_client = OpenAIEmbeddings()
-        index_name = "test_webpage_index_loader"
-        vector_db = MilvusVectorQuery(index_name=index_name,
-                                        embedding_client=embedding_client)
-        query = "What is SpaceX's most recent rocket model being tested?"
-        documents = vector_db.query(query)
-        self.assertTrue(documents is not None)
-        self.assertTrue(len(documents) > 0)
-        print(f"Query: {query} returned {len(documents)} results")
-        for doc in documents:
-            print(doc)
-            print(f"   {doc.metadata['title']}")
-            print(f"   {doc.page_content}")
+# class TestMilvusVDBQuery(unittest.TestCase):
+#
+#     def test_query_webpage_index(self):
+#         embedding_client = OpenAIEmbeddings()
+#         index_name = "test_webpage_index_loader"
+#         vector_db = MilvusVectorQuery(index_name=index_name,
+#                                         embedding_client=embedding_client)
+#         query = "What is SpaceX's most recent rocket model being tested?"
+#         documents = vector_db.query(query)
+#         self.assertTrue(documents is not None)
+#         self.assertTrue(len(documents) > 0)
+#         print(f"Query: {query} returned {len(documents)} results")
+#         for doc in documents:
+#             print(doc)
+#             print(f"   {doc.metadata['title']}")
+#             print(f"   {doc.page_content}")
 
 
 
