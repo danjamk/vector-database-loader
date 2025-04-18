@@ -67,7 +67,8 @@ web_pdf_content_source = {
 
 google_drive_content_source = {"name": "Test Google Drive",
                   "type": "Google Drive",
-                  "location": "1chQNbpiaozntsP5obMnSeBl1DgW8EBd9"
+                  "location": "1chQNbpiaozntsP5obMnSeBl1DgW8EBd9",
+                    "chunk_size": 1024,
                   }
 
 load_dotenv(find_dotenv())

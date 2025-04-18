@@ -75,7 +75,7 @@ class BaseVectorLoader:
         if index_exists and delete_index:
             self.delete_index()
 
-        batch_size = 500
+        batch_size = 250
         total_batches = len(document_set) // batch_size + (1 if len(document_set) % batch_size > 0 else 0)
         print(f"Now loading {len(document_set)} document chunks in {total_batches} batches of {batch_size}")
 
